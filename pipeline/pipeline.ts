@@ -1,6 +1,6 @@
-type Transformation<Input,Output>=(dataInput:Input)=>Output|Promise<Output>;
+type Transformation<Input,Output>=(data:Input)=>Output|Promise<Output>;
 
-function  createPipeline<InputType, OutputType>(
+function createPipeline<InputType, OutputType>(
 transformations:Transformation<any,any>[],
 validator: (data: unknown) => data is OutputType 
 ):(initialData: InputType) => Promise<OutputType | Error>{
@@ -13,7 +13,7 @@ return async (initialData:InputType)=>{
             resultGenerated=await transform(resultGenerated);
         }
         
-        if(!validator){
+        if(!validator(resultGenerated)){
             throw new Error("Validation falied !!Output didn't match the validation");
         }
         return resultGenerated;
@@ -47,7 +47,7 @@ const validateEmailFormat:Transformation<RawUser,RawUser>=(user)=>{
     }
     }
     if(!flag){
-    throw new Error(`Invalid Email Format for user ${user.email}`);
+    throw new Error(`Invalid Email Format for user ${user.username}`);
     }
     return user;
 }
